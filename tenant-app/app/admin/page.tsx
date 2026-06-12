@@ -17,10 +17,10 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b131e] text-slate-200 font-sans selection:bg-blue-500/30">
+    <div className="min-h-screen bg-[#0b131e] print:bg-white text-slate-200 print:text-black font-sans selection:bg-blue-500/30">
       
       {/* Top Navbar */}
-      <header className="bg-white/5 border-b border-white/10 px-8 py-4 flex justify-between items-center sticky top-0 z-20 backdrop-blur-md">
+      <header className="print:hidden bg-white/5 border-b border-white/10 px-8 py-4 flex justify-between items-center sticky top-0 z-20 backdrop-blur-md">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center">
             <ClipboardList className="text-white w-5 h-5" />
@@ -54,7 +54,7 @@ export default function AdminDashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="p-8 max-w-7xl mx-auto">
+      <main className="print:hidden p-8 max-w-7xl mx-auto">
         
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -198,7 +198,7 @@ export default function AdminDashboard() {
       </main>
 
       {/* Hidden Print Layout (Task Cards) */}
-      <div className="hidden print:block bg-white text-black w-full min-h-screen absolute top-0 left-0 z-50" dir="rtl">
+      <div className="hidden print:block print:bg-white print:text-black w-full min-h-screen absolute top-0 left-0 z-50 m-0 p-0" dir="rtl">
         {/* Print Header */}
         <div className="text-center font-bold text-lg mb-6 flex justify-center items-center gap-2">
           <span>צוות: ליקויים |</span>
@@ -210,7 +210,7 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-2 gap-x-6 gap-y-8 max-w-[210mm] mx-auto">
           
           {/* Card 1 */}
-          <div className="border-[3px] border-black rounded-xl p-4 flex flex-col h-[125mm] relative">
+          <div className="break-inside-avoid border-[3px] border-black rounded-xl p-4 flex flex-col h-[125mm] relative bg-white">
             {/* Top Bar */}
             <div className="flex justify-between items-center border-b-2 border-black pb-2 mb-2">
               <div className="border-2 border-black px-4 py-1 font-bold">תוקן</div>
@@ -237,7 +237,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Card 2 */}
-          <div className="border-[3px] border-black rounded-xl p-4 flex flex-col h-[125mm] relative">
+          <div className="break-inside-avoid border-[3px] border-black rounded-xl p-4 flex flex-col h-[125mm] relative bg-white">
             <div className="flex justify-between items-center border-b-2 border-black pb-2 mb-2">
               <div className="border-2 border-black px-4 py-1 font-bold">תוקן</div>
               <div className="text-xl font-black">חדר: 201</div>
@@ -257,7 +257,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Card 3 */}
-          <div className="border-[3px] border-black rounded-xl p-4 flex flex-col h-[125mm] relative">
+          <div className="break-inside-avoid border-[3px] border-black rounded-xl p-4 flex flex-col h-[125mm] relative bg-white">
             <div className="flex justify-between items-center border-b-2 border-black pb-2 mb-2">
               <div className="border-2 border-black px-4 py-1 font-bold">תוקן</div>
               <div className="text-xl font-black">חדר: 201</div>
@@ -277,7 +277,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Card 4 */}
-          <div className="border-[3px] border-black rounded-xl p-4 flex flex-col h-[125mm] relative">
+          <div className="break-inside-avoid border-[3px] border-black rounded-xl p-4 flex flex-col h-[125mm] relative bg-white">
             <div className="flex justify-between items-center border-b-2 border-black pb-2 mb-2">
               <div className="border-2 border-black px-4 py-1 font-bold">תוקן</div>
               <div className="text-xl font-black">חדר: 201</div>
