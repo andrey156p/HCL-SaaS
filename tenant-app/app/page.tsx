@@ -9,7 +9,8 @@ export default function LoginPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Connecting to backend...');
+    // Simulate login and redirect to admin dashboard
+    window.location.href = '/admin';
   };
 
   return (
