@@ -182,6 +182,15 @@ export default function Dashboard() {
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
                 />
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-400 mb-1">Admin Full Name</label>
+                <input 
+                  type="text" 
+                  placeholder="e.g. John Doe" 
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+                />
+              </div>
               
               <div>
                 <label className="block text-sm font-medium text-slate-400 mb-1">Admin Email</label>
