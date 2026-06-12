@@ -24,6 +24,10 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'HCL SaaS Backend is running' });
 });
 
+// Start Background Cron Jobs
+const startCronJobs = require('./src/cron/cleanPhotos');
+startCronJobs();
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
