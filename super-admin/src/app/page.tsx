@@ -1,6 +1,11 @@
-import { Building2, Users, Activity, FileText, Settings, LogOut, ChevronRight, Bell } from "lucide-react";
+'use client';
+
+import { useState } from 'react';
+import { Building2, Users, Activity, FileText, Settings, LogOut, ChevronRight, Bell, Plus, X } from "lucide-react";
 
 export default function Dashboard() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-[#0b0f19] text-slate-200 font-sans selection:bg-purple-500/30">
       
@@ -104,8 +109,11 @@ export default function Dashboard() {
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-xl rounded-3xl p-8">
           <div className="flex justify-between items-center mb-8">
             <h3 className="text-xl font-bold text-white">Recent Clients</h3>
-            <button className="text-sm font-medium text-purple-400 hover:text-purple-300 transition-colors flex items-center">
-              View All <ChevronRight className="w-4 h-4 ml-1" />
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-medium hover:shadow-lg hover:shadow-purple-500/20 transition-all">
+              <Plus className="w-4 h-4" />
+              Add Client
             </button>
           </div>
 
@@ -151,6 +159,62 @@ export default function Dashboard() {
           </div>
         </div>
       </main>
+
+      {/* Add Client Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-[#0b0f19] border border-white/10 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex justify-between items-center p-6 border-b border-white/5">
+              <h3 className="text-xl font-bold text-white">Add New Client</h3>
+              <button 
+                onClick={() => setIsModalOpen(false)}
+                className="text-slate-400 hover:text-white transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <form className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-400 mb-1">Facility Name</label>
+                <input 
+                  type="text" 
+                  placeholder="e.g. Hospital Alpha" 
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-slate-400 mb-1">Admin Email</label>
+                <input 
+                  type="email" 
+                  placeholder="admin@hospital.com" 
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-400 mb-1">Temporary Password</label>
+                <input 
+                  type="password" 
+                  placeholder="••••••••" 
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+                />
+              </div>
+
+              <div className="pt-4">
+                <button 
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 rounded-xl hover:shadow-lg hover:shadow-purple-500/20 transition-all"
+                >
+                  Create Client Account
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
