@@ -5,7 +5,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-[#0b0f19] text-slate-200 font-sans selection:bg-purple-500/30">
       
       {/* Sidebar */}
-      <aside className="fixed top-0 left-0 h-full w-64 glass-panel border-r border-white/5 p-6 flex flex-col z-20">
+      <aside className="fixed top-0 left-0 h-full w-64 bg-white/5 backdrop-blur-xl border-r border-white/10 shadow-xl p-6 flex flex-col z-20">
         <div className="flex items-center gap-3 mb-10">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
             <Building2 className="text-white w-5 h-5" />
@@ -66,7 +66,7 @@ export default function Dashboard() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="glass-panel rounded-3xl p-6 relative overflow-hidden group">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-xl rounded-3xl p-6 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:opacity-30 transition-opacity">
               <Building2 className="w-16 h-16 text-purple-400" />
             </div>
@@ -77,7 +77,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="glass-panel rounded-3xl p-6 relative overflow-hidden group">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-xl rounded-3xl p-6 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:opacity-30 transition-opacity">
               <Activity className="w-16 h-16 text-blue-400" />
             </div>
@@ -88,7 +88,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="glass-panel rounded-3xl p-6 relative overflow-hidden group">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-xl rounded-3xl p-6 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:opacity-30 transition-opacity">
               <FileText className="w-16 h-16 text-amber-400" />
             </div>
@@ -101,7 +101,7 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Tenants */}
-        <div className="glass-panel rounded-3xl p-8">
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-xl rounded-3xl p-8">
           <div className="flex justify-between items-center mb-8">
             <h3 className="text-xl font-bold text-white">Recent Clients</h3>
             <button className="text-sm font-medium text-purple-400 hover:text-purple-300 transition-colors flex items-center">

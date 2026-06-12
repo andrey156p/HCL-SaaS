@@ -22,8 +22,4 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-@layer utilities {
-  .glass-panel {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-xl;
-  }
-}
+
