@@ -198,55 +198,104 @@ export default function AdminDashboard() {
       </main>
 
       {/* Hidden Print Layout (Task Cards) */}
-      <div className="hidden print:block p-8 bg-white text-black w-full min-h-screen absolute top-0 left-0 z-50">
-        <h2 className="text-2xl font-bold text-center mb-8 border-b pb-4">Maintenance Task Cards</h2>
+      <div className="hidden print:block bg-white text-black w-full min-h-screen absolute top-0 left-0 z-50" dir="rtl">
+        {/* Print Header */}
+        <div className="text-center font-bold text-lg mb-6 flex justify-center items-center gap-2">
+          <span>צוות: ליקויים |</span>
+          <span>מחלקה: test |</span>
+          <span>תאריך: 12/06/2026</span>
+        </div>
         
-        <div className="grid grid-cols-2 gap-8">
+        {/* 2x2 Grid for A4 Page */}
+        <div className="grid grid-cols-2 gap-x-6 gap-y-8 max-w-[210mm] mx-auto">
+          
           {/* Card 1 */}
-          <div className="border-2 border-slate-800 p-6 rounded-lg relative">
-            <div className="absolute top-4 right-4 border-2 border-slate-800 w-8 h-8 rounded-md flex items-center justify-center">
-              {/* Checkbox */}
-            </div>
-            <div className="text-xs uppercase font-bold text-slate-500 mb-1">Task ID: #1024</div>
-            <h3 className="text-xl font-bold mb-2">Broken AC in Room 302</h3>
-            <p className="text-sm mb-4">The air conditioner is leaking water and making a loud noise. Patients are complaining about the heat.</p>
-            <div className="flex gap-4 text-sm font-bold mb-6">
-              <span className="bg-slate-200 px-2 py-1 rounded">Urgent</span>
-              <span className="bg-slate-200 px-2 py-1 rounded">HVAC</span>
+          <div className="border-[3px] border-black rounded-xl p-4 flex flex-col h-[125mm] relative">
+            {/* Top Bar */}
+            <div className="flex justify-between items-center border-b-2 border-black pb-2 mb-2">
+              <div className="border-2 border-black px-4 py-1 font-bold">תוקן</div>
+              <div className="text-xl font-black">חדר: 201</div>
             </div>
             
-            <div className="border-t border-dashed border-slate-400 pt-4 mt-auto">
-              <div className="flex justify-between text-sm mb-2">
-                <span>Assigned to: _______________</span>
-                <span>Date: _______________</span>
-              </div>
-              <div className="text-sm">
-                Worker Signature: _______________
-              </div>
+            {/* Description */}
+            <div className="text-center font-bold text-lg mb-2">
+              אסלה<br/>
+              <span className="text-sm font-normal text-gray-600">מים נוזלים</span>
+            </div>
+
+            {/* Photo Placeholder */}
+            <div className="flex-grow flex items-center justify-center bg-gray-100 border border-gray-300 mb-4 overflow-hidden rounded-md">
+              <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80" alt="Toilet" className="object-cover h-full w-full" />
+            </div>
+            
+            {/* Footer Signatures */}
+            <div className="mt-auto pt-2 flex justify-between items-end text-sm font-bold border-t-2 border-dashed border-black pt-4">
+              <div>שם עובד: ________________</div>
+              <div>חתימה: ________________</div>
+              <div>תאריך: ________________</div>
             </div>
           </div>
 
           {/* Card 2 */}
-          <div className="border-2 border-slate-800 p-6 rounded-lg relative">
-            <div className="absolute top-4 right-4 border-2 border-slate-800 w-8 h-8 rounded-md flex items-center justify-center"></div>
-            <div className="text-xs uppercase font-bold text-slate-500 mb-1">Task ID: #1025</div>
-            <h3 className="text-xl font-bold mb-2">Lightbulb replacement</h3>
-            <p className="text-sm mb-4">Hallway B light is flickering.</p>
-            <div className="flex gap-4 text-sm font-bold mb-6">
-              <span className="bg-slate-200 px-2 py-1 rounded">Normal</span>
-              <span className="bg-slate-200 px-2 py-1 rounded">Electrical</span>
+          <div className="border-[3px] border-black rounded-xl p-4 flex flex-col h-[125mm] relative">
+            <div className="flex justify-between items-center border-b-2 border-black pb-2 mb-2">
+              <div className="border-2 border-black px-4 py-1 font-bold">תוקן</div>
+              <div className="text-xl font-black">חדר: 201</div>
             </div>
-            
-            <div className="border-t border-dashed border-slate-400 pt-4 mt-auto">
-              <div className="flex justify-between text-sm mb-2">
-                <span>Assigned to: _______________</span>
-                <span>Date: _______________</span>
-              </div>
-              <div className="text-sm">
-                Worker Signature: _______________
-              </div>
+            <div className="text-center font-bold text-lg mb-2">
+              כיור<br/>
+              <span className="text-sm font-normal text-gray-600">סתימה בכיור</span>
+            </div>
+            <div className="flex-grow flex items-center justify-center bg-gray-100 border border-gray-300 mb-4 overflow-hidden rounded-md">
+              <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80" alt="Sink" className="object-cover h-full w-full" />
+            </div>
+            <div className="mt-auto pt-2 flex justify-between items-end text-sm font-bold border-t-2 border-dashed border-black pt-4">
+              <div>שם עובד: ________________</div>
+              <div>חתימה: ________________</div>
+              <div>תאריך: ________________</div>
             </div>
           </div>
+
+          {/* Card 3 */}
+          <div className="border-[3px] border-black rounded-xl p-4 flex flex-col h-[125mm] relative">
+            <div className="flex justify-between items-center border-b-2 border-black pb-2 mb-2">
+              <div className="border-2 border-black px-4 py-1 font-bold">תוקן</div>
+              <div className="text-xl font-black">חדר: 201</div>
+            </div>
+            <div className="text-center font-bold text-lg mb-2">
+              ארונות<br/>
+              <span className="text-sm font-normal text-gray-600">דלת שבורה</span>
+            </div>
+            <div className="flex-grow flex items-center justify-center bg-gray-100 border border-gray-300 mb-4 overflow-hidden rounded-md">
+              <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80" alt="Cabinet" className="object-cover h-full w-full" />
+            </div>
+            <div className="mt-auto pt-2 flex justify-between items-end text-sm font-bold border-t-2 border-dashed border-black pt-4">
+              <div>שם עובד: ________________</div>
+              <div>חתימה: ________________</div>
+              <div>תאריך: ________________</div>
+            </div>
+          </div>
+
+          {/* Card 4 */}
+          <div className="border-[3px] border-black rounded-xl p-4 flex flex-col h-[125mm] relative">
+            <div className="flex justify-between items-center border-b-2 border-black pb-2 mb-2">
+              <div className="border-2 border-black px-4 py-1 font-bold">תוקן</div>
+              <div className="text-xl font-black">חדר: 201</div>
+            </div>
+            <div className="text-center font-bold text-lg mb-2">
+              מזגן<br/>
+              <span className="text-sm font-normal text-gray-600">לא מקרר</span>
+            </div>
+            <div className="flex-grow flex items-center justify-center bg-gray-100 border border-gray-300 mb-4 overflow-hidden rounded-md">
+              <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80" alt="AC" className="object-cover h-full w-full" />
+            </div>
+            <div className="mt-auto pt-2 flex justify-between items-end text-sm font-bold border-t-2 border-dashed border-black pt-4">
+              <div>שם עובד: ________________</div>
+              <div>חתימה: ________________</div>
+              <div>תאריך: ________________</div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
