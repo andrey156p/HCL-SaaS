@@ -2,359 +2,331 @@
 
 import { 
   ClipboardList, 
-  Clock, 
-  CheckCircle2, 
-  AlertTriangle,
-  QrCode,
-  Users,
-  Plus,
-  Printer,
-  Settings,
-  Filter
+  Settings, 
+  Users, 
+  Printer, 
+  QrCode, 
+  FileText,
+  Smartphone,
+  Check,
+  RefreshCcw,
+  AlertTriangle
 } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useStore } from '../../store/store';
 
 export default function AdminDashboard() {
-  const [activeTeamFilter, setActiveTeamFilter] = useState('ALL');
-  const { tasks, fetchTasks, updateTask } = useStore();
+  const { tasks, teams, departments, fetchTasks, updateTask, markTasksAsDone } = useStore();
+  const [activeTabId, setActiveTabId] = useState<string | null>(null);
+  const [selectedTaskIds, setSelectedTaskIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetchTasks();
   }, [fetchTasks]);
 
+  // Set default tab when teams load
+  useEffect(() => {
+    if (teams.length > 0 && !activeTabId) {
+      setActiveTabId(teams[0].id);
+    }
+  }, [teams, activeTabId]);
+
   const handlePrint = () => {
     window.print();
   };
 
+  const toggleTaskSelection = (taskId: string) => {
+    const newSet = new Set(selectedTaskIds);
+    if (newSet.has(taskId)) {
+      newSet.delete(taskId);
+    } else {
+      newSet.add(taskId);
+    }
+    setSelectedTaskIds(newSet);
+  };
+
+  const handleCloseSelected = async () => {
+    if (selectedTaskIds.size === 0) return;
+    await markTasksAsDone(Array.from(selectedTaskIds));
+    setSelectedTaskIds(new Set());
+  };
+
+  const handleMarkDone = async (taskId: string) => {
+    await updateTask(taskId, { status: 'DONE' });
+  };
+
+  const handleTransferTeam = async (taskId: string, newTeamId: string) => {
+    if (!newTeamId) return;
+    await updateTask(taskId, { teamId: newTeamId });
+  };
+
+  // Filter tasks by active tab
+  const activeTasks = tasks.filter(t => t.status !== 'DONE' && (t.teamId === activeTabId || (!t.teamId && activeTabId === 'ALL')));
+
   return (
-    <div className="min-h-screen bg-[#0b131e] print:bg-white text-slate-200 print:text-black font-sans selection:bg-blue-500/30">
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans print:bg-white print:text-black" dir="rtl">
       
-      {/* Top Navbar */}
-      <header className="print:hidden bg-white/5 border-b border-white/10 px-8 py-4 flex justify-between items-center sticky top-0 z-20 backdrop-blur-md">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center">
-            <ClipboardList className="text-white w-5 h-5" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-white">Hospital Alpha</h1>
-            <p className="text-xs text-slate-400">Admin Dashboard</p>
-          </div>
+      {/* Top Header & Actions Bar */}
+      <header className="print:hidden bg-white border-b border-slate-200 shadow-sm p-4">
+        
+        {/* Warning Banner (Mocked like in screenshot) */}
+        <div className="flex justify-center mb-4 text-orange-600 font-bold text-sm bg-orange-50 py-1 px-4 rounded-full max-w-xl mx-auto border border-orange-100 items-center gap-2">
+          <AlertTriangle className="w-4 h-4" />
+          <span>סיכום אזהרות: 1 להדפסה | 2 חריגות (48 שעות)!</span>
         </div>
 
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={handlePrint}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white rounded-lg font-medium transition-all print:hidden"
-          >
-            <Printer className="w-4 h-4 text-slate-300" />
-            Print Cards
-          </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-lg font-medium transition-all print:hidden">
-            <QrCode className="w-4 h-4 text-blue-400" />
-            Generate QR
-          </button>
-          <Link href="/admin/settings" className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-lg font-medium transition-all print:hidden">
-            <Settings className="w-4 h-4 text-slate-400" />
-            Settings
-          </Link>
-          <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-medium shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all">
-            <Plus className="w-4 h-4" />
-            New Task
-          </button>
-          <div className="w-10 h-10 rounded-full bg-slate-700 border-2 border-blue-500 overflow-hidden ml-2 cursor-pointer">
-            <img src="https://i.pravatar.cc/150?img=11" alt="Profile" className="w-full h-full object-cover" />
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+          
+          {/* Logo Right Side */}
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-black text-blue-800 tracking-tight leading-none text-center">לוח<br/>בקרה<br/>HCL</h1>
+          </div>
+
+          {/* Action Buttons Center/Left */}
+          <div className="flex flex-wrap gap-2 justify-center flex-1 max-w-4xl mx-auto items-center">
+            
+            <Link href="/admin/settings" className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-lg text-sm font-bold transition-colors">
+              <Settings className="w-4 h-4" />
+              ניהול מערכות נבדקות
+            </Link>
+            
+            <Link href="/admin/settings" className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-lg text-sm font-bold transition-colors">
+              <Users className="w-4 h-4" />
+              ניהול צוותים
+            </Link>
+
+            <button onClick={handleCloseSelected} className="flex items-center gap-2 px-3 py-1.5 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg text-sm font-bold transition-colors shadow-sm">
+              <Check className="w-4 h-4" />
+              סגור נבחרים
+            </button>
+
+            <button onClick={() => setSelectedTaskIds(new Set())} className="flex items-center gap-2 px-3 py-1.5 bg-white text-indigo-600 border border-indigo-200 hover:bg-indigo-50 rounded-lg text-sm font-bold transition-colors">
+              בטל בחירה -
+            </button>
+
+            <Link href="/admin/settings" className="flex items-center gap-2 px-3 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 rounded-lg text-sm font-bold transition-colors">
+              <Users className="w-4 h-4" />
+              ניהול עובדים
+            </Link>
+            
+            <button className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white hover:bg-blue-700 rounded-lg text-sm font-bold transition-colors shadow-sm">
+              <QrCode className="w-4 h-4" />
+              QR קודים
+            </button>
+            
+            <button className="flex items-center gap-2 px-3 py-1.5 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg text-sm font-bold transition-colors shadow-sm">
+              <FileText className="w-4 h-4" />
+              דוח מנהל
+            </button>
+
+            <button className="flex items-center gap-2 px-3 py-1.5 bg-purple-600 text-white hover:bg-purple-700 rounded-lg text-sm font-bold transition-colors shadow-sm">
+              WorkerApp
+              <Smartphone className="w-4 h-4" />
+            </button>
+
+            <button onClick={handlePrint} className="flex items-center gap-2 px-3 py-1.5 bg-orange-500 text-white hover:bg-orange-600 rounded-lg text-sm font-bold transition-colors shadow-sm">
+              <Printer className="w-4 h-4" />
+              הדפס
+            </button>
+
+            <select className="px-2 py-1.5 border border-slate-300 rounded-lg text-sm bg-white font-medium text-slate-700 outline-none">
+              <option>עברית (HE)</option>
+            </select>
+
+            <select className="px-2 py-1.5 border border-slate-300 rounded-lg text-sm bg-white font-medium text-slate-700 outline-none">
+              <option>בחר עובד...</option>
+            </select>
+
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="print:hidden p-8 max-w-7xl mx-auto">
+      {/* Main Content Area */}
+      <main className="print:hidden max-w-6xl mx-auto p-4 md:p-8">
         
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col relative overflow-hidden group">
-            <div className="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              <AlertTriangle className="w-24 h-24 text-red-500" />
-            </div>
-            <span className="text-slate-400 text-sm font-medium mb-1">New / Urgent</span>
-            <span className="text-3xl font-bold text-white">12</span>
+        {/* Filters Bar */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-6 flex flex-wrap items-center gap-4 justify-center">
+          
+          <button className="px-6 py-2 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 rounded-lg font-bold transition-colors ml-auto">
+            נקה סינון
+          </button>
+          
+          <div className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-xl border border-slate-200">
+            <span className="text-sm font-bold text-slate-500">מתאריך</span>
+            <input type="date" className="bg-transparent text-slate-800 font-medium outline-none" defaultValue="2026-06-11" />
           </div>
 
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col relative overflow-hidden group">
-            <div className="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              <Clock className="w-24 h-24 text-amber-500" />
-            </div>
-            <span className="text-slate-400 text-sm font-medium mb-1">In Progress</span>
-            <span className="text-3xl font-bold text-white">8</span>
+          <div className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-xl border border-slate-200">
+            <span className="text-sm font-bold text-slate-500">מחלקה</span>
+            <select className="bg-transparent text-slate-800 font-medium outline-none w-48">
+              <option>כל המחלקות</option>
+              {departments.map(d => (
+                <option key={d.id} value={d.id}>{d.name}</option>
+              ))}
+            </select>
           </div>
-
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col relative overflow-hidden group">
-            <div className="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              <CheckCircle2 className="w-24 h-24 text-emerald-500" />
-            </div>
-            <span className="text-slate-400 text-sm font-medium mb-1">Completed Today</span>
-            <span className="text-3xl font-bold text-white">24</span>
-          </div>
-
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col relative overflow-hidden group">
-            <div className="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              <Users className="w-24 h-24 text-blue-500" />
-            </div>
-            <span className="text-slate-400 text-sm font-medium mb-1">Active Workers</span>
-            <span className="text-3xl font-bold text-white">5</span>
-          </div>
+          
         </div>
 
-        {/* Kanban Board */}
-        <div>
-          <div className="flex justify-between items-end mb-6">
-            <h2 className="text-xl font-bold text-white">Task Board</h2>
-            
-            {/* Team Filters */}
-            <div className="flex items-center gap-2 bg-white/5 border border-white/10 p-1 rounded-xl">
-              <button 
-                onClick={() => setActiveTeamFilter('ALL')}
-                className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeTeamFilter === 'ALL' ? 'bg-slate-700 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'}`}
-              >
-                Все (All)
-              </button>
-              <button 
-                onClick={() => setActiveTeamFilter('PLUMBING')}
-                className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeTeamFilter === 'PLUMBING' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'}`}
-              >
-                אינסטלציה (Plumbing)
-              </button>
-              <button 
-                onClick={() => setActiveTeamFilter('ELECTRIC')}
-                className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeTeamFilter === 'ELECTRIC' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'}`}
-              >
-                חשמל (Electric)
-              </button>
-              <button 
-                onClick={() => setActiveTeamFilter('CLEANING')}
-                className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeTeamFilter === 'CLEANING' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'}`}
-              >
-                ניקיון (Cleaning)
-              </button>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
-            {/* Column 1: New */}
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col h-[600px]">
-              <div className="flex items-center justify-between mb-4 px-2">
-                <h3 className="font-semibold text-slate-300 flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                  New Tasks
-                </h3>
-                <span className="bg-white/10 text-xs px-2 py-1 rounded-md">2</span>
-              </div>
-              
-              <div className="space-y-3 overflow-y-auto pr-2 pb-2">
-                {/* Task Card */}
-                <div className="bg-[#0b131e] border border-white/10 p-4 rounded-xl shadow-lg hover:border-blue-500/50 transition-colors cursor-pointer group">
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="bg-red-500/20 text-red-400 text-xs px-2 py-0.5 rounded uppercase font-bold tracking-wider">Urgent</span>
-                    <span className="text-xs text-slate-500">10 mins ago</span>
-                  </div>
-                  <h4 className="text-white font-medium mb-1 group-hover:text-blue-400 transition-colors">Broken AC in Room 302</h4>
-                  <p className="text-sm text-slate-400 mb-3 line-clamp-2">The air conditioner is leaking water and making a loud noise. Patients are complaining about the heat.</p>
-                  <div className="flex items-center justify-between text-xs text-slate-500">
-                    <span className="flex items-center gap-1"><ClipboardList className="w-3 h-3"/> HVAC</span>
-                    <span>Unassigned</span>
-                  </div>
-                  <div className="mt-3 pt-3 border-t border-white/5 flex gap-2">
-                    <button className="flex-1 text-[11px] font-medium bg-white/5 hover:bg-white/10 text-slate-300 py-1.5 rounded transition-colors">Transfer Team</button>
-                    <button className="flex-1 text-[11px] font-medium bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 py-1.5 rounded transition-colors">Assign Worker</button>
-                  </div>
-                </div>
-
-                <div className="bg-[#0b131e] border border-white/10 p-4 rounded-xl shadow-lg hover:border-blue-500/50 transition-colors cursor-pointer group">
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="bg-amber-500/20 text-amber-400 text-xs px-2 py-0.5 rounded uppercase font-bold tracking-wider">Normal</span>
-                    <span className="text-xs text-slate-500">2 hours ago</span>
-                  </div>
-                  <h4 className="text-white font-medium mb-1 group-hover:text-blue-400 transition-colors">Lightbulb replacement</h4>
-                  <p className="text-sm text-slate-400 mb-3 line-clamp-2">Hallway B light is flickering.</p>
-                  <div className="flex items-center justify-between text-xs text-slate-500">
-                    <span className="flex items-center gap-1"><ClipboardList className="w-3 h-3"/> Electrical</span>
-                    <span>Unassigned</span>
-                  </div>
-                  <div className="mt-3 pt-3 border-t border-white/5 flex gap-2">
-                    <button className="flex-1 text-[11px] font-medium bg-white/5 hover:bg-white/10 text-slate-300 py-1.5 rounded transition-colors">Transfer Team</button>
-                    <button className="flex-1 text-[11px] font-medium bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 py-1.5 rounded transition-colors">Assign Worker</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Column 2: In Progress */}
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col h-[600px]">
-              <div className="flex items-center justify-between mb-4 px-2">
-                <h3 className="font-semibold text-slate-300 flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-amber-500"></div>
-                  In Progress
-                </h3>
-                <span className="bg-white/10 text-xs px-2 py-1 rounded-md">1</span>
-              </div>
-              
-              <div className="space-y-3 overflow-y-auto pr-2 pb-2">
-                <div className="bg-[#0b131e] border border-blue-500/30 p-4 rounded-xl shadow-lg hover:border-blue-500/50 transition-colors cursor-pointer group">
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="bg-amber-500/20 text-amber-400 text-xs px-2 py-0.5 rounded uppercase font-bold tracking-wider">Normal</span>
-                    <span className="text-xs text-slate-500">Working</span>
-                  </div>
-                  <h4 className="text-white font-medium mb-1 group-hover:text-blue-400 transition-colors">Sink clogged</h4>
-                  <p className="text-sm text-slate-400 mb-3">Men's restroom on 2nd floor.</p>
-                  <div className="flex items-center justify-between text-xs text-slate-500">
-                    <span className="flex items-center gap-1"><ClipboardList className="w-3 h-3"/> Plumbing</span>
-                    <div className="flex items-center gap-1.5 text-blue-400">
-                      <div className="w-4 h-4 rounded-full bg-slate-700 overflow-hidden">
-                        <img src="https://i.pravatar.cc/150?img=33" alt="Worker" />
-                      </div>
-                      Mike
-                    </div>
-                  </div>
-                  <div className="mt-3 pt-3 border-t border-white/5 flex gap-2">
-                    <button className="flex-1 text-[11px] font-medium bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 py-1.5 rounded transition-colors">Close Task</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Column 3: Completed */}
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col h-[600px]">
-              <div className="flex items-center justify-between mb-4 px-2">
-                <h3 className="font-semibold text-slate-300 flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                  Completed (Need Review)
-                </h3>
-                <span className="bg-white/10 text-xs px-2 py-1 rounded-md">1</span>
-              </div>
-              
-              <div className="space-y-3 overflow-y-auto pr-2 pb-2">
-                <div className="bg-[#0b131e] border border-white/10 p-4 rounded-xl shadow-lg opacity-70 hover:opacity-100 transition-opacity cursor-pointer group">
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-0.5 rounded uppercase font-bold tracking-wider">Done</span>
-                    <span className="text-xs text-slate-500">10:30 AM</span>
-                  </div>
-                  <h4 className="text-white font-medium mb-1 line-through text-slate-400 group-hover:text-blue-400 transition-colors">Fix door handle</h4>
-                  <p className="text-sm text-slate-500 mb-3">Main entrance door is loose.</p>
-                  <div className="flex items-center justify-between text-xs text-slate-500">
-                    <span className="flex items-center gap-1 text-emerald-500"><CheckCircle2 className="w-3 h-3"/> Photo Attached</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
+        {/* Team Tabs */}
+        <div className="flex border-b-2 border-slate-200 mb-6 overflow-x-auto">
+          <button 
+            onClick={() => setActiveTabId('ALL')}
+            className={`px-6 py-3 font-bold text-sm transition-all whitespace-nowrap ${activeTabId === 'ALL' ? 'text-blue-600 border-b-2 border-blue-600 -mb-[2px]' : 'text-slate-500 hover:text-slate-700'}`}
+          >
+            כל המשימות (All)
+          </button>
+          {teams.map(team => (
+            <button 
+              key={team.id}
+              onClick={() => setActiveTabId(team.id)}
+              className={`px-6 py-3 font-bold text-sm transition-all whitespace-nowrap ${activeTabId === team.id ? 'text-blue-600 border-b-2 border-blue-600 -mb-[2px]' : 'text-slate-500 hover:text-slate-700'}`}
+            >
+              {team.name.replace(/_/g, ' ')}
+            </button>
+          ))}
         </div>
 
+        {/* Task List */}
+        <div className="space-y-4">
+          {activeTasks.length === 0 ? (
+            <div className="text-center py-12 text-slate-400 font-medium bg-white rounded-2xl border border-slate-200">
+              אין משימות (No tasks found)
+            </div>
+          ) : (
+            activeTasks.map(task => (
+              <div key={task.id} className="bg-white rounded-2xl shadow-sm border border-orange-200 p-4 flex gap-4 items-stretch relative">
+                
+                {/* Left Actions */}
+                <div className="w-48 shrink-0 flex flex-col items-center justify-center gap-3 border-l border-slate-100 pl-4">
+                  <div className="bg-orange-50 text-orange-600 px-3 py-1 rounded-md text-xs font-bold w-full text-center border border-orange-100 flex flex-col items-center gap-1">
+                    <span className="flex items-center gap-1"><AlertTriangle className="w-3 h-3"/> במעבדת יורי</span>
+                    <span className="flex items-center gap-1 text-[10px]"><RefreshCcw className="w-3 h-3"/> החזר לפתוח</span>
+                  </div>
+                  
+                  <select 
+                    className="w-full text-sm border border-slate-300 rounded bg-slate-50 px-2 py-1.5 outline-none font-medium"
+                    onChange={(e) => handleTransferTeam(task.id, e.target.value)}
+                    value={task.teamId || ''}
+                  >
+                    <option value="" disabled>העבר צוות...</option>
+                    {teams.map(t => (
+                      <option key={t.id} value={t.id}>{t.name}</option>
+                    ))}
+                  </select>
+
+                  <button 
+                    onClick={() => handleMarkDone(task.id)}
+                    className="w-full py-2 bg-white border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50 rounded-lg font-bold transition-colors"
+                  >
+                    בוצע
+                  </button>
+                </div>
+
+                {/* Main Content */}
+                <div className="flex-1 flex flex-col pr-2">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="bg-pink-100 text-pink-700 text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
+                      <QrCode className="w-3 h-3" />
+                      דיווח צוות / QR
+                    </span>
+                    <span className="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
+                      <Users className="w-3 h-3" />
+                      עזרה מכלל בטיחות
+                    </span>
+                  </div>
+                  
+                  <h3 className="font-black text-lg text-slate-800 flex items-center gap-2">
+                    <span>א 1</span>
+                    <span className="text-slate-300">|</span>
+                    <span>חדר: {task.room || 'לובי'}</span>
+                    <span className="text-slate-300">|</span>
+                    <span className="text-slate-600">{task.actionType === 'REPAIR' ? 'תיקון' : 'החלפה'}</span>
+                  </h3>
+                  
+                  <h4 className="font-bold text-slate-700 mt-1">{task.system?.name || task.systemName || 'תקלה חדשה'}</h4>
+                  <p className="text-sm text-slate-500 mt-1">{task.notes}</p>
+                  
+                  <div className="mt-auto pt-4 flex items-center gap-4 text-[11px] text-slate-400 font-medium">
+                    <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> 09:45 11/06/2026</span>
+                    <span>צוות: לאב פול</span>
+                  </div>
+                </div>
+
+                {/* Image */}
+                <div className="w-32 h-32 shrink-0 bg-slate-100 rounded-lg overflow-hidden border border-slate-200">
+                  <img src={task.photoUrl || "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80"} alt="Defect" className="w-full h-full object-cover" />
+                </div>
+
+                {/* Checkbox */}
+                <div className="pl-2 pr-4 flex items-center justify-center border-r border-slate-100">
+                  <input 
+                    type="checkbox" 
+                    checked={selectedTaskIds.has(task.id)}
+                    onChange={() => toggleTaskSelection(task.id)}
+                    className="w-6 h-6 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" 
+                  />
+                </div>
+
+              </div>
+            ))
+          )}
+        </div>
       </main>
 
       {/* Hidden Print Layout (Task Cards) */}
-      <div className="hidden print:block print:bg-white print:text-black w-full min-h-screen absolute top-0 left-0 z-50 m-0 p-0" dir="rtl">
-        {/* Print Header */}
-        <div className="text-center font-bold text-lg mb-6 flex justify-center items-center gap-2">
-          <span>צוות: ליקויים |</span>
-          <span>מחלקה: test |</span>
-          <span>תאריך: 12/06/2026</span>
+      <div className="hidden print:block w-full" dir="rtl">
+        <div className="text-center font-bold text-lg mb-6 pt-4">
+          <span>צוות: {teams.find(t => t.id === activeTabId)?.name || 'כללי'} | </span>
+          <span>תאריך הדפסה: {new Date().toLocaleDateString('he-IL')}</span>
         </div>
         
-        {/* 2x2 Grid for A4 Page */}
-        <div className="grid grid-cols-2 gap-x-6 gap-y-8 max-w-[210mm] mx-auto">
-          
-          {/* Card 1 */}
-          <div className="break-inside-avoid border-[3px] border-black rounded-xl p-4 flex flex-col h-[125mm] relative bg-white">
-            {/* Top Bar */}
-            <div className="flex justify-between items-center border-b-2 border-black pb-2 mb-2">
-              <div className="border-2 border-black px-4 py-1 font-bold">תוקן</div>
-              <div className="text-xl font-black">חדר: 201</div>
-            </div>
-            
-            {/* Description */}
-            <div className="text-center font-bold text-lg mb-2">
-              אסלה<br/>
-              <span className="text-sm font-normal text-gray-600">מים נוזלים</span>
-            </div>
+        {/* Exactly 4 cards per A4 page. A4 is ~297mm height. Cards are 130mm height + gap = perfectly fits 2 rows per page */}
+        <div className="grid grid-cols-2 gap-x-6 gap-y-6 max-w-[190mm] mx-auto">
+          {activeTasks.slice(0, 4).map(task => (
+            <div key={task.id} className="break-inside-avoid border-2 border-black rounded-lg p-3 flex flex-col h-[130mm] bg-white relative">
+              
+              <div className="flex justify-between items-center border-b-2 border-black pb-2 mb-2">
+                <div className="border border-black px-3 py-0.5 font-bold text-sm">תוקן</div>
+                <div className="text-lg font-black">חדר: {task.room}</div>
+              </div>
+              
+              <div className="text-center font-bold text-base mb-2">
+                {task.system?.name || task.systemName}<br/>
+                <span className="text-xs font-normal text-slate-700">{task.notes}</span>
+              </div>
 
-            {/* Photo Placeholder */}
-            <div className="flex-grow flex items-center justify-center bg-gray-100 border border-gray-300 mb-4 overflow-hidden rounded-md">
-              <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80" alt="Toilet" className="object-cover h-full w-full" />
-            </div>
-            
-            {/* Footer Signatures */}
-            <div className="mt-auto pt-2 flex justify-between items-end text-sm font-bold border-t-2 border-dashed border-black pt-4">
-              <div>שם עובד: ________________</div>
-              <div>חתימה: ________________</div>
-              <div>תאריך: ________________</div>
-            </div>
-          </div>
+              <div className="flex-grow flex items-center justify-center bg-slate-50 border border-slate-300 mb-2 overflow-hidden rounded">
+                <img src={task.photoUrl || "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80"} alt="Photo" className="object-cover h-full w-full grayscale" />
+              </div>
+              
+              <div className="mt-auto pt-2 flex justify-between items-end text-xs font-bold border-t-2 border-dashed border-black pt-3">
+                <div>עובד: ____________</div>
+                <div>חתימה: ____________</div>
+                <div>תאריך: ____________</div>
+              </div>
 
-          {/* Card 2 */}
-          <div className="break-inside-avoid border-[3px] border-black rounded-xl p-4 flex flex-col h-[125mm] relative bg-white">
-            <div className="flex justify-between items-center border-b-2 border-black pb-2 mb-2">
-              <div className="border-2 border-black px-4 py-1 font-bold">תוקן</div>
-              <div className="text-xl font-black">חדר: 201</div>
             </div>
-            <div className="text-center font-bold text-lg mb-2">
-              כיור<br/>
-              <span className="text-sm font-normal text-gray-600">סתימה בכיור</span>
+          ))}
+          {/* Fill empty slots with dummy if less than 4, just to show layout */}
+          {activeTasks.length < 4 && Array.from({ length: 4 - activeTasks.length }).map((_, i) => (
+            <div key={`empty-${i}`} className="break-inside-avoid border-2 border-black rounded-lg p-3 flex flex-col h-[130mm] bg-white opacity-30">
+              <div className="flex justify-between items-center border-b-2 border-black pb-2 mb-2">
+                <div className="border border-black px-3 py-0.5 font-bold text-sm">תוקן</div>
+                <div className="text-lg font-black">חדר: ____</div>
+              </div>
+              <div className="flex-grow flex items-center justify-center bg-slate-50 border border-slate-300 mb-2"></div>
+              <div className="mt-auto pt-2 flex justify-between items-end text-xs font-bold border-t-2 border-dashed border-black pt-3">
+                <div>עובד: ____________</div>
+                <div>חתימה: ____________</div>
+                <div>תאריך: ____________</div>
+              </div>
             </div>
-            <div className="flex-grow flex items-center justify-center bg-gray-100 border border-gray-300 mb-4 overflow-hidden rounded-md">
-              <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80" alt="Sink" className="object-cover h-full w-full" />
-            </div>
-            <div className="mt-auto pt-2 flex justify-between items-end text-sm font-bold border-t-2 border-dashed border-black pt-4">
-              <div>שם עובד: ________________</div>
-              <div>חתימה: ________________</div>
-              <div>תאריך: ________________</div>
-            </div>
-          </div>
-
-          {/* Card 3 */}
-          <div className="break-inside-avoid border-[3px] border-black rounded-xl p-4 flex flex-col h-[125mm] relative bg-white">
-            <div className="flex justify-between items-center border-b-2 border-black pb-2 mb-2">
-              <div className="border-2 border-black px-4 py-1 font-bold">תוקן</div>
-              <div className="text-xl font-black">חדר: 201</div>
-            </div>
-            <div className="text-center font-bold text-lg mb-2">
-              ארונות<br/>
-              <span className="text-sm font-normal text-gray-600">דלת שבורה</span>
-            </div>
-            <div className="flex-grow flex items-center justify-center bg-gray-100 border border-gray-300 mb-4 overflow-hidden rounded-md">
-              <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80" alt="Cabinet" className="object-cover h-full w-full" />
-            </div>
-            <div className="mt-auto pt-2 flex justify-between items-end text-sm font-bold border-t-2 border-dashed border-black pt-4">
-              <div>שם עובד: ________________</div>
-              <div>חתימה: ________________</div>
-              <div>תאריך: ________________</div>
-            </div>
-          </div>
-
-          {/* Card 4 */}
-          <div className="break-inside-avoid border-[3px] border-black rounded-xl p-4 flex flex-col h-[125mm] relative bg-white">
-            <div className="flex justify-between items-center border-b-2 border-black pb-2 mb-2">
-              <div className="border-2 border-black px-4 py-1 font-bold">תוקן</div>
-              <div className="text-xl font-black">חדר: 201</div>
-            </div>
-            <div className="text-center font-bold text-lg mb-2">
-              מזגן<br/>
-              <span className="text-sm font-normal text-gray-600">לא מקרר</span>
-            </div>
-            <div className="flex-grow flex items-center justify-center bg-gray-100 border border-gray-300 mb-4 overflow-hidden rounded-md">
-              <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80" alt="AC" className="object-cover h-full w-full" />
-            </div>
-            <div className="mt-auto pt-2 flex justify-between items-end text-sm font-bold border-t-2 border-dashed border-black pt-4">
-              <div>שם עובד: ________________</div>
-              <div>חתימה: ________________</div>
-              <div>תאריך: ________________</div>
-            </div>
-          </div>
-
+          ))}
         </div>
       </div>
+
     </div>
   );
 }

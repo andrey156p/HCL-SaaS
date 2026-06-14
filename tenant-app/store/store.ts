@@ -23,6 +23,7 @@ interface AppState {
   createArea: (name: string) => Promise<void>;
   createSystem: (name: string, teamId: string) => Promise<void>;
   deleteSystem: (id: string) => Promise<void>;
+  markTasksAsDone: (taskIds: string[]) => Promise<void>;
 }
 
 export const useStore = create<AppState>((set, get) => ({
@@ -175,6 +176,26 @@ export const useStore = create<AppState>((set, get) => ({
         headers: { 'Authorization': `Bearer ${MOCK_TOKEN}` }
       });
       await get().fetchDictionaries();
+    } catch (err: any) {
+      set({ error: err.message });
+    }
+  },
+
+  markTasksAsDone: async (taskIds) => {
+    try {
+      // For now we simulate closing by iterating over the updateTask method, 
+      // ideally there would be a dedicated bulk update endpoint
+      await Promise.all(taskIds.map(id => 
+        fetch(`${API_URL}/tasks/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${MOCK_TOKEN}`
+          },
+          body: JSON.stringify({ status: 'DONE' })
+        })
+      ));
+      await get().fetchTasks();
     } catch (err: any) {
       set({ error: err.message });
     }
