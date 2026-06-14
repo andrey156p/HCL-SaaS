@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Settings as SettingsIcon,
   Users,
@@ -13,22 +13,16 @@ import {
   Save
 } from 'lucide-react';
 import Link from 'next/link';
+import { useStore } from '../../../store/store';
 
 export default function SettingsDashboard() {
   const [activeTab, setActiveTab] = useState('teams');
 
-  // Dummy state to mock the API for now, later we integrate with Prisma
-  const [teams, setTeams] = useState([
-    { id: '1', name: 'חשמל' },
-    { id: '2', name: 'מיזוג_אוויר' },
-    { id: '3', name: 'ניקיון' }
-  ]);
+  const { teams, departments, areas, systems, fetchDictionaries, deleteTeam, deleteSystem } = useStore();
 
-  const [systems, setSystems] = useState([
-    { id: '1', name: 'אסלה', teamId: '3' },
-    { id: '2', name: 'כיור', teamId: '3' },
-    { id: '3', name: 'שקעי חשמל', teamId: '1' }
-  ]);
+  useEffect(() => {
+    fetchDictionaries();
+  }, [fetchDictionaries]);
 
   return (
     <div className="min-h-screen bg-[#0b131e] text-slate-200 font-sans selection:bg-blue-500/30">
@@ -95,7 +89,7 @@ export default function SettingsDashboard() {
                 {teams.map(t => (
                   <div key={t.id} className="flex justify-between items-center bg-slate-800/50 border border-slate-700 p-4 rounded-xl">
                     <span className="font-medium text-lg">{t.name}</span>
-                    <button className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors">
+                    <button onClick={() => deleteTeam(t.id)} className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors">
                       <Trash2 className="w-5 h-5" />
                     </button>
                   </div>
@@ -159,7 +153,7 @@ export default function SettingsDashboard() {
                         ))}
                       </select>
                     </div>
-                    <button className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors mr-4">
+                    <button onClick={() => deleteSystem(s.id)} className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors mr-4">
                       <Trash2 className="w-5 h-5" />
                     </button>
                   </div>

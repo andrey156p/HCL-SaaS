@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   ClipboardCheck, 
   MapPin, 
@@ -12,25 +12,18 @@ import {
   ArrowRight,
   ShieldCheck
 } from 'lucide-react';
+import { useStore } from '../../../store/store';
 
 export default function InspectorApp() {
+  const { areas, systems, fetchDictionaries, createBulkTasks } = useStore();
+
+  useEffect(() => {
+    fetchDictionaries();
+  }, [fetchDictionaries]);
+
   const [step, setStep] = useState(1); // 1: Room Info, 2: Add Defects
   const [department, setDepartment] = useState('');
   const [room, setRoom] = useState('');
-  
-  // Dummy Data for Selects
-  const areas = [
-    { id: '1', name: 'אמבטיה' }, // Bathroom
-    { id: '2', name: 'חדר' }, // Room
-    { id: '3', name: 'מטבחון' } // Kitchen
-  ];
-  
-  const systems = [
-    { id: '1', name: 'אסלה', areaId: '1' }, // Toilet
-    { id: '2', name: 'כיור', areaId: '1' }, // Sink
-    { id: '3', name: 'קירות ותקרה', areaId: '2' }, // Walls and Ceiling
-    { id: '4', name: 'דלת ומשקוף בחדר', areaId: '2' } // Door
-  ];
 
   // Cart for multiple defects
   const [defectsCart, setDefectsCart] = useState([]);
@@ -70,8 +63,22 @@ export default function InspectorApp() {
   };
 
   const handleSubmitAll = async () => {
-    // Here we will call the /api/tasks/bulk endpoint!
-    alert(`Submitting ${defectsCart.length} defects for Room ${room}!`);
+    // Map defects to the format expected by the backend
+    const tasksToSubmit = defectsCart.map(d => ({
+      departmentId: department, // Since we don't have department selection yet, just pass the string (or we could map to a real UUID later)
+      room: room,
+      areaId: d.areaId,
+      systemId: d.systemId,
+      actionType: d.actionType,
+      notes: d.notes,
+      photoUrl: null, // We haven't implemented real photo upload yet
+      teamId: systems.find(s => s.id === d.systemId)?.autoAssignTeamId, // Auto-routing based on system
+      inspectorName: 'Инспектор'
+    }));
+
+    await createBulkTasks(tasksToSubmit);
+
+    alert(`Успешно отправлено ${defectsCart.length} дефектов для комнаты ${room}!`);
     setDefectsCart([]);
     setStep(1);
     setRoom('');

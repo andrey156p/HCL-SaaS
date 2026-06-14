@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Camera, MapPin, AlertTriangle, CheckCircle2, Upload, Globe } from 'lucide-react';
+import { useStore } from '../../../store/store';
 
 const TRANSLATIONS = {
   en: {
@@ -83,6 +84,8 @@ export default function InspectorReportPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [translatedDesc, setTranslatedDesc] = useState('');
 
+  const { createTask } = useStore();
+
   useEffect(() => {
     // Auto-detect browser language
     const browserLang = navigator.language.slice(0, 2);
@@ -108,7 +111,19 @@ export default function InspectorReportPage() {
     const mockHebrewTranslation = 'תורגם אוטומטית לעברית: ' + description;
     setTranslatedDesc(mockHebrewTranslation);
     
-    setSubmitted(true);
+    // Call the Zustand store to actually create the task
+    const form = e.target as HTMLFormElement;
+    const category = (form.elements.namedItem('category') as HTMLInputElement)?.value || 'אחר';
+    
+    createTask({
+      room: '201', // Example hardcoded room for the QR code
+      systemId: null, // Since this is a freeform text, system is unknown initially
+      actionType: 'REPAIR',
+      notes: mockHebrewTranslation,
+      photoUrl: 'https://example.com/mock-photo.jpg'
+    }).then(() => {
+      setSubmitted(true);
+    });
   };
 
   if (submitted) {

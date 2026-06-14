@@ -10,11 +10,19 @@ import {
   ArrowLeft
 } from 'lucide-react';
 
-export default function WorkerApp() {
-  const [selectedTask, setSelectedTask] = useState(null);
+import { useStore } from '../../../store/store';
+import { useEffect } from 'react';
 
-  // Dummy tasks assigned to this worker
-  const tasks = [
+export default function WorkerApp() {
+  const [selectedTask, setSelectedTask] = useState<any>(null);
+  const { tasks, fetchTasks, updateTask } = useStore();
+
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
+
+  // Dummy tasks assigned to this worker (fallback if empty)
+  const myTasks = tasks.length > 0 ? tasks.filter(t => t.status !== 'DONE') : [
     {
       id: '1',
       room: '201',
@@ -39,8 +47,11 @@ export default function WorkerApp() {
     }
   ];
 
-  const handleMarkDone = () => {
-    alert(`Task ${selectedTask.systemName} marked as DONE!`);
+  const handleMarkDone = async () => {
+    if (selectedTask?.id && selectedTask.id.length > 5) { // If it's a real DB task
+      await updateTask(selectedTask.id, { status: 'DONE' });
+    }
+    alert(`Task ${selectedTask.systemName || selectedTask.system?.name} marked as DONE!`);
     setSelectedTask(null);
   };
 
@@ -124,11 +135,11 @@ export default function WorkerApp() {
         
         <h2 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
           <Clock className="w-5 h-5 text-emerald-500" />
-          משימות פתוחות ({tasks.length})
+          משימות פתוחות ({myTasks.length})
         </h2>
 
         <div className="space-y-4">
-          {tasks.map(task => (
+          {myTasks.map(task => (
             <button 
               key={task.id}
               onClick={() => setSelectedTask(task)}

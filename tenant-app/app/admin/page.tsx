@@ -13,11 +13,17 @@ import {
   Filter
 } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useStore } from '../../../store/store';
 
 export default function AdminDashboard() {
   const [activeTeamFilter, setActiveTeamFilter] = useState('ALL');
-  
+  const { tasks, fetchTasks, updateTask } = useStore();
+
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
+
   const handlePrint = () => {
     window.print();
   };
