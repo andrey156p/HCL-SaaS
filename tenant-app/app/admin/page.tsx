@@ -8,8 +8,10 @@ import {
   QrCode,
   Users,
   Plus,
-  Printer
+  Printer,
+  Settings
 } from 'lucide-react';
+import Link from 'next/link';
 
 export default function AdminDashboard() {
   const handlePrint = () => {
@@ -43,6 +45,10 @@ export default function AdminDashboard() {
             <QrCode className="w-4 h-4 text-blue-400" />
             Generate QR
           </button>
+          <Link href="/admin/settings" className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-lg font-medium transition-all print:hidden">
+            <Settings className="w-4 h-4 text-slate-400" />
+            Settings
+          </Link>
           <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-medium shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all">
             <Plus className="w-4 h-4" />
             New Task
