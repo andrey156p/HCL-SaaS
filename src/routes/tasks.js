@@ -10,6 +10,7 @@ router.use(requireTenant);
 
 router.get('/', taskController.getTasks);
 router.post('/', taskController.createTask);
+router.post('/bulk', taskController.createBulkTasks);
 router.put('/:id', taskController.updateTask);
 
 module.exports = router;

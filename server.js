@@ -16,12 +16,14 @@ const taskRoutes = require('./src/routes/tasks');
 const uploadRoutes = require('./src/routes/upload');
 const tenantRoutes = require('./src/routes/tenants');
 const invoiceRoutes = require('./src/routes/invoices');
+const dictionaryRoutes = require('./src/routes/dictionaries');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/tenants', tenantRoutes);
 app.use('/api/invoices', invoiceRoutes);
+app.use('/api/dictionaries', dictionaryRoutes);
 
 // Basic healthcheck route
 app.get('/api/health', (req, res) => {
