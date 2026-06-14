@@ -9,7 +9,8 @@ import {
   Camera, 
   Upload,
   CheckCircle2,
-  ArrowRight
+  ArrowRight,
+  ShieldCheck
 } from 'lucide-react';
 
 export default function InspectorApp() {
@@ -71,6 +72,14 @@ export default function InspectorApp() {
   const handleSubmitAll = async () => {
     // Here we will call the /api/tasks/bulk endpoint!
     alert(`Submitting ${defectsCart.length} defects for Room ${room}!`);
+    setDefectsCart([]);
+    setStep(1);
+    setRoom('');
+  };
+
+  const handleAllOk = () => {
+    // Here we will record that the room was inspected and is OK
+    alert(`Помещение ${room} проверено: ВСЁ В ПОРЯДКЕ! ✅`);
     setDefectsCart([]);
     setStep(1);
     setRoom('');
@@ -222,9 +231,9 @@ export default function InspectorApp() {
             </div>
 
             {/* Cart Preview */}
-            {defectsCart.length > 0 && (
+            {defectsCart.length > 0 ? (
               <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Уже проверено ({defectsCart.length}):</h3>
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Уже добавлено ({defectsCart.length}):</h3>
                 <div className="space-y-3">
                   {defectsCart.map(defect => (
                     <div key={defect.id} className="flex items-center justify-between bg-slate-50 border border-slate-100 p-3 rounded-xl">
@@ -244,18 +253,28 @@ export default function InspectorApp() {
                   ))}
                 </div>
               </div>
+            ) : (
+              <button 
+                onClick={handleAllOk}
+                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-lg rounded-2xl py-6 flex flex-col items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/30 border-2 border-emerald-400"
+              >
+                <ShieldCheck className="w-10 h-10 mb-1" />
+                <span>В помещении всё в порядке!</span>
+                <span className="text-sm font-normal text-emerald-100">Завершить проверку и перейти к следующему</span>
+              </button>
             )}
             
             {/* Submit All */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-slate-200">
-              <button 
-                onClick={handleSubmitAll}
-                disabled={defectsCart.length === 0}
-                className="w-full max-w-md mx-auto bg-indigo-800 hover:bg-indigo-900 disabled:bg-slate-300 text-white font-bold text-lg rounded-xl py-4 flex items-center justify-center gap-2 transition-all shadow-xl shadow-indigo-900/20"
-              >
-                Сохранить дефекты помещения ({defectsCart.length})
-              </button>
-            </div>
+            {defectsCart.length > 0 && (
+              <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-slate-200">
+                <button 
+                  onClick={handleSubmitAll}
+                  className="w-full max-w-md mx-auto bg-indigo-800 hover:bg-indigo-900 text-white font-bold text-lg rounded-xl py-4 flex items-center justify-center gap-2 transition-all shadow-xl shadow-indigo-900/20"
+                >
+                  Отправить неисправности ({defectsCart.length})
+                </button>
+              </div>
+            )}
 
           </div>
         )}

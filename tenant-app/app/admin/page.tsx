@@ -9,11 +9,15 @@ import {
   Users,
   Plus,
   Printer,
-  Settings
+  Settings,
+  Filter
 } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
 
 export default function AdminDashboard() {
+  const [activeTeamFilter, setActiveTeamFilter] = useState('ALL');
+  
   const handlePrint = () => {
     window.print();
   };
@@ -99,7 +103,37 @@ export default function AdminDashboard() {
 
         {/* Kanban Board */}
         <div>
-          <h2 className="text-xl font-bold text-white mb-6">Task Board</h2>
+          <div className="flex justify-between items-end mb-6">
+            <h2 className="text-xl font-bold text-white">Task Board</h2>
+            
+            {/* Team Filters */}
+            <div className="flex items-center gap-2 bg-white/5 border border-white/10 p-1 rounded-xl">
+              <button 
+                onClick={() => setActiveTeamFilter('ALL')}
+                className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeTeamFilter === 'ALL' ? 'bg-slate-700 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'}`}
+              >
+                Все (All)
+              </button>
+              <button 
+                onClick={() => setActiveTeamFilter('PLUMBING')}
+                className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeTeamFilter === 'PLUMBING' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'}`}
+              >
+                אינסטלציה (Plumbing)
+              </button>
+              <button 
+                onClick={() => setActiveTeamFilter('ELECTRIC')}
+                className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeTeamFilter === 'ELECTRIC' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'}`}
+              >
+                חשמל (Electric)
+              </button>
+              <button 
+                onClick={() => setActiveTeamFilter('CLEANING')}
+                className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeTeamFilter === 'CLEANING' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'}`}
+              >
+                ניקיון (Cleaning)
+              </button>
+            </div>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
             {/* Column 1: New */}
@@ -125,6 +159,10 @@ export default function AdminDashboard() {
                     <span className="flex items-center gap-1"><ClipboardList className="w-3 h-3"/> HVAC</span>
                     <span>Unassigned</span>
                   </div>
+                  <div className="mt-3 pt-3 border-t border-white/5 flex gap-2">
+                    <button className="flex-1 text-[11px] font-medium bg-white/5 hover:bg-white/10 text-slate-300 py-1.5 rounded transition-colors">Transfer Team</button>
+                    <button className="flex-1 text-[11px] font-medium bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 py-1.5 rounded transition-colors">Assign Worker</button>
+                  </div>
                 </div>
 
                 <div className="bg-[#0b131e] border border-white/10 p-4 rounded-xl shadow-lg hover:border-blue-500/50 transition-colors cursor-pointer group">
@@ -137,6 +175,10 @@ export default function AdminDashboard() {
                   <div className="flex items-center justify-between text-xs text-slate-500">
                     <span className="flex items-center gap-1"><ClipboardList className="w-3 h-3"/> Electrical</span>
                     <span>Unassigned</span>
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-white/5 flex gap-2">
+                    <button className="flex-1 text-[11px] font-medium bg-white/5 hover:bg-white/10 text-slate-300 py-1.5 rounded transition-colors">Transfer Team</button>
+                    <button className="flex-1 text-[11px] font-medium bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 py-1.5 rounded transition-colors">Assign Worker</button>
                   </div>
                 </div>
               </div>
@@ -168,6 +210,9 @@ export default function AdminDashboard() {
                       </div>
                       Mike
                     </div>
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-white/5 flex gap-2">
+                    <button className="flex-1 text-[11px] font-medium bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 py-1.5 rounded transition-colors">Close Task</button>
                   </div>
                 </div>
               </div>

@@ -20,7 +20,8 @@ const TRANSLATIONS = {
     catPlumbing: 'Plumbing',
     catElectrical: 'Electrical',
     catHVAC: 'HVAC',
-    catOther: 'Other'
+    catOther: 'Other',
+    validationError: 'Unfortunately, we cannot process your request if you do not fill in all the fields (Description and Photo are required).'
   },
   ru: {
     title: 'Сообщить о поломке',
@@ -40,7 +41,8 @@ const TRANSLATIONS = {
     catPlumbing: 'Сантехника',
     catElectrical: 'Электрика',
     catHVAC: 'Кондиционер',
-    catOther: 'Другое'
+    catOther: 'Другое',
+    validationError: 'К сожалению, мы не сможем обработать вашу заявку, если вы не заполните все поля (описание и фото обязательны).'
   },
   he: {
     title: 'דיווח על תקלה',
@@ -60,7 +62,8 @@ const TRANSLATIONS = {
     catPlumbing: 'אינסטלציה',
     catElectrical: 'חשמל',
     catHVAC: 'מיזוג אוויר',
-    catOther: 'אחר'
+    catOther: 'אחר',
+    validationError: 'לצערנו, לא נוכל לעבד את בקשתך אם לא תמלא את כל השדות (חובה להוסיף תיאור ותמונה).'
   }
 };
 
@@ -75,6 +78,10 @@ const CATEGORY_HEBREW_VALUES = {
 export default function InspectorReportPage() {
   const [submitted, setSubmitted] = useState(false);
   const [lang, setLang] = useState<'en' | 'ru' | 'he'>('he'); // default
+  const [description, setDescription] = useState('');
+  const [photoAdded, setPhotoAdded] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [translatedDesc, setTranslatedDesc] = useState('');
 
   useEffect(() => {
     // Auto-detect browser language
@@ -89,8 +96,18 @@ export default function InspectorReportPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Free-text translation will happen in the Backend Node.js API 
-    // using Google Translate API to convert Russian/English desc to Hebrew.
+    if (!description.trim() || !photoAdded) {
+      setErrorMsg(t.validationError);
+      return;
+    }
+    
+    setErrorMsg('');
+    
+    // MOCK TRANSLATION: In a real app we would call Google Translate API.
+    // For demonstration, we just show that it will be translated to Hebrew.
+    const mockHebrewTranslation = 'תורגם אוטומטית לעברית: ' + description;
+    setTranslatedDesc(mockHebrewTranslation);
+    
     setSubmitted(true);
   };
 
@@ -142,6 +159,13 @@ export default function InspectorReportPage() {
             <p className="text-sm text-slate-400 font-medium">{t.subtitle}</p>
           </div>
         </div>
+
+        {errorMsg && (
+          <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-4 rounded-xl mb-6 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
+            <p className="text-sm font-medium">{errorMsg}</p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           
@@ -196,7 +220,8 @@ export default function InspectorReportPage() {
             <textarea 
               rows={4}
               placeholder={t.descPlaceholder}
-              required
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all resize-none"
             ></textarea>
           </div>
@@ -204,12 +229,17 @@ export default function InspectorReportPage() {
           {/* Photo Upload */}
           <div>
             <label className={`block text-sm font-medium text-slate-400 mb-2 ${isRtl ? 'mr-1' : 'ml-1'}`}>{t.photo}</label>
-            <div className="border-2 border-dashed border-white/20 rounded-2xl p-8 flex flex-col items-center justify-center text-center bg-white/5 hover:bg-white/10 transition-colors cursor-pointer group">
-              <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                <Camera className="w-6 h-6 text-blue-400" />
+            <div 
+              onClick={() => setPhotoAdded(!photoAdded)}
+              className={`border-2 border-dashed ${photoAdded ? 'border-emerald-500/50 bg-emerald-500/10' : 'border-white/20 bg-white/5'} rounded-2xl p-8 flex flex-col items-center justify-center text-center hover:bg-white/10 transition-colors cursor-pointer group`}
+            >
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-3 transition-transform ${photoAdded ? 'bg-emerald-500/20 text-emerald-400' : 'bg-blue-500/20 text-blue-400 group-hover:scale-110'}`}>
+                {photoAdded ? <CheckCircle2 className="w-6 h-6" /> : <Camera className="w-6 h-6" />}
               </div>
-              <span className="text-white font-medium mb-1">{t.photoBtn}</span>
-              <span className="text-xs text-slate-500">{t.photoSub}</span>
+              <span className={`font-medium mb-1 ${photoAdded ? 'text-emerald-400' : 'text-white'}`}>
+                {photoAdded ? 'Фото добавлено!' : t.photoBtn}
+              </span>
+              {!photoAdded && <span className="text-xs text-slate-500">{t.photoSub}</span>}
             </div>
           </div>
 
